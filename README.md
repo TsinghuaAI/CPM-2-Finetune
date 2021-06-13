@@ -29,12 +29,13 @@ docker pull gyxthu17/cpm-2:1.0
 
 `scripts/full_model/` 目录下的 7 个 .sh 文件分别对应技术报告中 7 个数据集的 Fine-tune 脚本。注意：除了 wmt_cn 之外，其他数据集都使用**纯中文模型**，wmt_cn 数据集使用**中英双语模型**。
 
-运行前，需要先将脚本中的 `WORKING_DIR` 改为此 CPM-2-Finetune 路径，将 `DATA_PATH` 改为数据集存储的目录，`CKPT_PATH` 改为模型权重所在的目录。可以设置 `SAVE_PATH` 指定训练结果存储的路径，将 `${WORKING_DIR}/configs/host_files/hostfile-cpm2` 中的 node-0 和 node-1 改为多机训练的主机名称。
+运行前，需要先将脚本中的 `WORKING_DIR` 改为此 CPM-2-Finetune 文件夹的路径，将 `DATA_PATH` 改为数据集存储的目录，`CKPT_PATH` 改为模型权重所在的目录。可以设置 `SAVE_PATH` 指定训练结果存储的路径，将 `${WORKING_DIR}/configs/host_files/hostfile-cpm2` 中的 node-0 和 node-1 改为多机训练的主机名称。
 
 使用以下命令运行，例如要进行 Math23K 数据集的 Fine-tune，则：
 
 ```[bash]
-    bash scripts/finetune_t5_math.sh
+cd CPM-2-Finetune
+bash scripts/finetune_cpm2_math.sh
 ```
 
 ## 3 引用

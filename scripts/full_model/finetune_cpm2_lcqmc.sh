@@ -10,33 +10,28 @@ HOST_FILE="${WORKING_DIR}/configs/host_files/hostfile-cpm2"
 MP_SIZE=4
 
 DATA_EXT=".json"
-DATA_PATH="/root/thu-plm/data/adgen"
+DATA_PATH="/root/thu-plm/data/lcqmc"
 
-LR=${1-0.000003}
-GRAD_ACC=${2-2}
+LR=${1-0.000002}
+GRAD_ACC=${2-1}
 
 CONFIG_PATH="${WORKING_DIR}/configs/model/cpm2_config.json"
 CKPT_PATH="/root/thu-plm/checkpoints/cpm2"
 
-SAVE_PATH="${WORKING_DIR}/results/adgen/t5_finetune_lr${LR}const_G${GRAD_ACC}/"
+SAVE_PATH="${WORKING_DIR}/results/lcqmc/cpm2_finetune_lr${LR}_G${GRAD_ACC}/"
 LOG_FILE="${SAVE_PATH}/log.txt"
 DS_CONFIG="${WORKING_DIR}/configs/deepspeed/ds_full_model.json"
 TOKENIZER_PATH="${WORKING_DIR}/bpe_cn"
 
-BATCH_SIZE=16
-EVAL_BATCH_SIZE=64
+BATCH_SIZE=32
 TRAIN_ITER=-1
 EPOCHS=10
-
-TOP_P=0.9
-TOP_K=40
 
 
 OPTS=""
 OPTS+=" --model-config ${CONFIG_PATH}"
 OPTS+=" --model-parallel-size ${MP_SIZE}"
 OPTS+=" --batch-size ${BATCH_SIZE}"
-OPTS+=" --eval-batch-size ${EVAL_BATCH_SIZE}"
 OPTS+=" --gradient-accumulation-steps ${GRAD_ACC}"
 OPTS+=" --train-iters ${TRAIN_ITER}"
 OPTS+=" --save ${SAVE_PATH}"
@@ -44,7 +39,7 @@ OPTS+=" --log-file ${LOG_FILE}"
 OPTS+=" --load ${CKPT_PATH}"
 OPTS+=" --data-path ${DATA_PATH}"
 OPTS+=" --data-ext ${DATA_EXT}"
-OPTS+=" --data-name adgen"
+OPTS+=" --data-name lcqmc"
 OPTS+=" --distributed-backend nccl"
 OPTS+=" --lr ${LR}"
 OPTS+=" --no-load-optim"
@@ -53,7 +48,7 @@ OPTS+=" --weight-decay 1e-2"
 OPTS+=" --clip-grad 1.0"
 OPTS+=" --warmup 0.0"
 OPTS+=" --tokenizer-path ${TOKENIZER_PATH}"
-OPTS+=" --save-interval 100000"
+OPTS+=" --save-interval 1000000"
 OPTS+=" --eval-interval 100"
 OPTS+=" --eval-iters 10"
 OPTS+=" --log-interval 10"
@@ -66,8 +61,6 @@ OPTS+=" --do-train"
 OPTS+=" --do-valid"
 # OPTS+=" --do-eval"
 OPTS+=" --epochs ${EPOCHS}"
-OPTS+=" --top-p ${TOP_P}"
-OPTS+=" --top-k ${TOP_K}"
 
 CMD="deepspeed --num_nodes ${NUM_WORKERS} --num_gpus ${NUM_GPUS_PER_WORKER} --hostfile ${HOST_FILE} ${WORKING_DIR}/finetune_cpm2.py ${OPTS}"
 
