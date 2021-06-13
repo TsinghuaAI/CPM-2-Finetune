@@ -1,25 +1,11 @@
 #! /bin/bash
 
-WORKING_DIR=/root/thu-plm/
+WORKING_DIR=/root/thu-plm/CPM-2-Finetune
 
-if [[ $DLS_TASK_NUMBER == 1 ]]; then
-    MASTER_ADDR=localhost
-    MASTER_PORT=6000
-    NNODES=1
-    NODE_RANK=0
-else
-    MASTER_HOST="$BATCH_CUSTOM0_HOSTS"
-    MASTER_ADDR="${MASTER_HOST%%:*}"
-    MASTER_PORT="${MASTER_HOST##*:}"
-    NNODES="$DLS_TASK_NUMBER"
-    NODE_RANK="$DLS_TASK_INDEX"
-fi
+NUM_WORKERS=2
+NUM_GPUS_PER_WORKER=8
 
-GPUS_PER_NODE=8
-DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
-                  --nnodes $NNODES --node_rank $NODE_RANK \
-                  --master_addr $MASTER_ADDR \
-                  --master_port $MASTER_PORT"
+HOST_FILE="${WORKING_DIR}/configs/host_files/hostfile-cpm2"
 
 MP_SIZE=4
 
@@ -35,7 +21,7 @@ CKPT_PATH="/root/thu-plm/checkpoints/cpm2"
 SAVE_PATH="${WORKING_DIR}/results/t5_finetune_wmtcn_lr${LR}const_G${GRAD_ACC}/"
 LOG_FILE="${SAVE_PATH}/log.txt"
 DS_CONFIG="${WORKING_DIR}/configs/deepspeed/ds_finetune_t5.json"
-TOKENIZER_PATH="${WORKING_DIR}/bpe_new_cn_en"
+TOKENIZER_PATH="${WORKING_DIR}/bpe_cn_en"
 
 BATCH_SIZE=16
 TRAIN_ITER=-1
@@ -76,7 +62,7 @@ OPTS+=" --do_valid"
 # OPTS+=" --do_eval"
 OPTS+=" --epochs ${EPOCHS}"
 
-CMD="python -m torch.distributed.launch ${DISTRIBUTED_ARGS} ${WORKING_DIR}/finetune_t5.py ${OPTS}"
+CMD="deepspeed --num_nodes ${NUM_WORKERS} --num_gpus ${NUM_GPUS_PER_WORKER} --hostfile ${HOST_FILE} ${WORKING_DIR}/finetune_cpm2.py ${OPTS}"
 
 echo ${CMD}
 mkdir -p ${SAVE_PATH}
