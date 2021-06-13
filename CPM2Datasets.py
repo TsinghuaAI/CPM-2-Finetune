@@ -500,9 +500,9 @@ class LCSTSDataset(CPM2Dataset):
         return data, max_enc_len, max_dec_len
 
 
-class PoemMCDataset(CPM2Dataset):
+class CCPMDataset(CPM2Dataset):
     def __init__(self, args, tokenizer: EncDecTokenizer, path, split, ratio=1, num=-1, prefix=None, add_target_post=False, cache_path=None, do_infer=False, prompt_config=None):
-        super(PoemMCDataset, self).__init__(args, tokenizer, path, split, ratio, num, prefix, add_target_post, cache_path, do_infer, prompt_config)
+        super(CCPMDataset, self).__init__(args, tokenizer, path, split, ratio, num, prefix, add_target_post, cache_path, do_infer, prompt_config)
     
     def process_data(self):
         data = []

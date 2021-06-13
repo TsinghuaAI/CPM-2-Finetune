@@ -34,7 +34,7 @@ from utils import setup_model_and_optimizer, set_random_seed, initialize_distrib
 
 from samplers import DistributedBatchSampler, RandomSampler
 
-from CPM2Datasets import C3Dataset, LCQMCDataset, LCSTSDataset, MathDataset, AdGenDataset, PoemMCDataset, CPM2Dataset, WMTENCNDataset
+from CPM2Datasets import C3Dataset, LCQMCDataset, LCSTSDataset, MathDataset, AdGenDataset, CCPMDataset, CPM2Dataset, WMTENCNDataset
 
 import torch.nn.functional as F
 
@@ -642,8 +642,8 @@ def main():
             "eval_metric": gen_metric,
             "cache_path": None,
         },
-        "poem_mc": {
-            "dataset": PoemMCDataset,
+        "ccpm": {
+            "dataset": CCPMDataset,
             "eval_func": evaluate,
             "eval_metric": acc_metric,
             "cache_path": None,
