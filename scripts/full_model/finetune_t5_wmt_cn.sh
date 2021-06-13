@@ -1,6 +1,6 @@
 #! /bin/bash
 
-WORKING_DIR=/mnt/sfs_turbo/CPM-Finetune-zzy
+WORKING_DIR=/root/thu-plm/
 
 if [[ $DLS_TASK_NUMBER == 1 ]]; then
     MASTER_ADDR=localhost
@@ -23,16 +23,14 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
 
 MP_SIZE=4
 
-ORIGIN_DATA_PATH="${WORKING_DIR}/large_data/"
 DATA_EXT=".json"
-CACHE_PATH="/cache/"
 DATA_PATH="/root/thu-plm/data/wmt20-encn"
 
 LR=${1-0.000005}
 GRAD_ACC=${2-2}
 
-CONFIG_PATH="${WORKING_DIR}/configs/model/enc_dec_xlarge_8_config.json"
-CKPT_PATH="/mnt/sfs_turbo/back-folder/enc-dec-pretrain-dense/checkpoints/checkpoint-5-1"
+CONFIG_PATH="${WORKING_DIR}/configs/model/cpm2_config.json"
+CKPT_PATH="/root/thu-plm/checkpoints/cpm2"
 
 SAVE_PATH="${WORKING_DIR}/results/t5_finetune_wmtcn_lr${LR}const_G${GRAD_ACC}/"
 LOG_FILE="${SAVE_PATH}/log.txt"
@@ -64,7 +62,7 @@ OPTS+=" --weight-decay 1e-2"
 OPTS+=" --clip-grad 1.0"
 OPTS+=" --warmup 0.0"
 OPTS+=" --tokenizer-path ${TOKENIZER_PATH}"
-OPTS+=" --save-interval 790"
+OPTS+=" --save-interval 100000"
 OPTS+=" --eval-interval 1"
 OPTS+=" --eval-iters 10"
 OPTS+=" --log-interval 10"

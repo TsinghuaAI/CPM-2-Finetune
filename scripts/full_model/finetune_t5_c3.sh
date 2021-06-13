@@ -24,7 +24,7 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
 MP_SIZE=4
 
 DATA_EXT=".json"
-DATA_PATH="/mnt/sfs_turbo/data/CLUE/c3"
+DATA_PATH="/root/thu-plm/data/c3"
 
 LR=${1-0.000005}
 GRAD_ACC=${2-8}
