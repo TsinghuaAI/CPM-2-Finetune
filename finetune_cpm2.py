@@ -25,6 +25,7 @@ import shutil
 
 from arguments import get_args
 from tokenization_enc_dec import EncDecTokenizer
+from tokenization_enc_dec_encn import EncDecTokenizer as EncDecTokenizerEnCn
 
 import mpu
 from utils import save_checkpoint
@@ -583,7 +584,10 @@ def main():
     device = torch.cuda.current_device()
 
     # setup tokenizer
-    tokenizer = EncDecTokenizer(os.path.join(args.tokenizer_path, 'vocab.txt'))
+    if "cn_en" in args.tokenizer_path:
+        tokenizer = EncDecTokenizerEnCn(os.path.join(args.tokenizer_path, 'vocab.txt'))
+    else:
+        tokenizer = EncDecTokenizer(os.path.join(args.tokenizer_path, 'vocab.txt'))
     
     with open(args.deepspeed_config, "r") as f:
         ds_config = json.load(f)
