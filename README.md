@@ -25,7 +25,7 @@ docker pull gyxthu17/cpm-2:1.0
 ```
 
 
-## 2 运行
+## 2 全参数微调
 
 `scripts/full_model/` 目录下的 7 个 .sh 文件分别对应技术报告中 7 个数据集的 Fine-tune 脚本。注意：除了 wmt_cn 之外，其他数据集都使用**纯中文模型**，wmt_cn 数据集使用**中英双语模型**。
 
@@ -35,10 +35,25 @@ docker pull gyxthu17/cpm-2:1.0
 
 ```[bash]
 cd CPM-2-Finetune
-bash scripts/finetune_cpm2_math.sh
+bash scripts/full_model/finetune_cpm2_math.sh
 ```
 
-## 3 引用
+## 3 基于 Prompt 的微调
+
+`scripts/prompt/` 目录下的 7 个 .sh 文件分别对应技术报告中 7 个数据集的 Prompt-based Tuning 脚本。注意：除了 wmt_cn 之外，其他数据集都使用**纯中文模型**，wmt_cn 数据集使用**中英双语模型**。
+
+与全参数微调相同，运行前需要修改 `WORKING_DIR`、`DATA_PATH`、`CKPT_PATH` 和 `SAVE_PATH` 以及 `${WORKING_DIR}/configs/host_files/hostfile-cpm2` 文件。
+
+除此之外，还可以通过修改 `configs/prompt/` 中的配置文件修改 prompt 的插入位置等配置信息。例如，对于 lcqmc 数据集，`configs/prompt/lcqmc` 目录下提供了多个 prompt 插入位置的 .json 配置文件。举例来说，lcqmc_33_34_33 代表输入的两个句子构成的三个可能位置插入 prompt 的比例为 33:34:33。`finetune_cpm2_lcqmc.sh` 中的 `PROMPT_CONFIG` 变量显式引用了这些文件。
+
+最后，使用以下命令运行：
+
+```[bash]
+cd CPM-2-Finetune
+bash scripts/prompt/finetune_cpm2_lcqmc.sh
+```
+
+## 4 引用
 
 如果您使用了我们的代码，请您引用下面的文章。
 
