@@ -4,8 +4,7 @@
 
 This is the repository of the fine-tuning code for CPM-2 which can be used for multi-node training and testing.
 
-Please refer to the [technical report](https://github.com/TsinghuaAI/tsinghuaai.github.io/blob/main/CPM-2.pdf) for the details of CPM-2.
-
+Please refer to the [technical report](https://arxiv.org/abs/2106.10715) for the details of CPM-2.
 
 
 ## 0 Pre-trained Weights

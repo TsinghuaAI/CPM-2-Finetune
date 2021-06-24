@@ -4,8 +4,7 @@
 
 本仓库为 CPM-2 模型的 fine-tune 代码仓库，可以用于模型 Fine-tune 的多机多卡训练/测试。
 
-CPM-2技术报告请参考[link](https://github.com/TsinghuaAI/tsinghuaai.github.io/blob/main/CPM-2.pdf)。
-
+CPM-2技术报告请参考[link](https://arxiv.org/abs/2106.10715)。
 
 
 ## 0 模型下载
