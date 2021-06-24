@@ -1,5 +1,7 @@
 # CPM-2-Finetune
 
+[中文版](https://github.com/TsinghuaAI/CPM-2-Finetune/blob/master/README.md)
+
 This is the repository of the fine-tuning code for CPM-2 which can be used for multi-node training and testing.
 
 Please refer to the [technical report](https://github.com/TsinghuaAI/tsinghuaai.github.io/blob/main/CPM-2.pdf) for the details of CPM-2.

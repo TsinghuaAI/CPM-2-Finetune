@@ -1,5 +1,7 @@
 # CPM-2-Finetune
 
+[English Version](https://github.com/TsinghuaAI/CPM-2-Finetune/blob/master/README_en.md)
+
 本仓库为 CPM-2 模型的 fine-tune 代码仓库，可以用于模型 Fine-tune 的多机多卡训练/测试。
 
 CPM-2技术报告请参考[link](https://github.com/TsinghuaAI/tsinghuaai.github.io/blob/main/CPM-2.pdf)。
