@@ -24,6 +24,10 @@ CPM-2技术报告请参考[link](https://github.com/TsinghuaAI/tsinghuaai.github
 docker pull gyxthu17/cpm-2:1.0
 ```
 
+可以使用以下命令运行 Docker 环境：
+```[bash]
+docker run -ti gyxthu17/cpm-2:1.0 /bin/bash
+```
 
 ## 2 全参数微调
 
