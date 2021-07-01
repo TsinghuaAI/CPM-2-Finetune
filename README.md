@@ -17,6 +17,17 @@ CPM-2技术报告请参考[link](https://arxiv.org/abs/2106.10715)。
 | 36000.tar | 中英文双语模型 | 110亿 |
 | 300000.tar | 中英文MoE模型 | 1980亿 |
 
+下载后的模型应该包含4个 .pt 文件：`mp_rank_0[0-3]_model_states.pt`。加载模型之前，需要先将这些文件放在名为 `100000/` 的目录下，目录外加上 `latest_checkpointed_iteration.txt` 文件，文件只有一行，内容是 100000。例如，若模型权重所在目录为 `cpm2/`，则目录结构为：
+
+```
+cpm2/
+├── 100000
+│   ├── mp_rank_00_model_states.pt
+│   ├── mp_rank_01_model_states.pt
+│   ├── mp_rank_02_model_states.pt
+│   └── mp_rank_03_model_states.pt
+└── latest_checkpointed_iteration.txt
+```
 
 ## 1 安装
 可以直接拉取我们提供的 Docker 环境：

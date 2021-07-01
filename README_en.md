@@ -17,7 +17,17 @@ Please apply for the pre-trained weights of CPM-2 model on the resource download
 | 36000.tar  | Chinese-English Model          | 11B        |
 | 300000.tar | Chinese-English Model with MoE | 198B       |
 
+The downloaded model weight consists of 4 .pt files: `mp_rank_0[0-3]_model_states.pt`. Before loading the model, you need to put the files unfer the directory named `100000/`. Then, create a file `latest_checkpointed_iteration.txt` which contain only one line for a number: 100000. For example, assume the directory for the model weight is `cpm2/`, then the structure of the directory is:
 
+```
+cpm2/
+├── 100000
+│   ├── mp_rank_00_model_states.pt
+│   ├── mp_rank_01_model_states.pt
+│   ├── mp_rank_02_model_states.pt
+│   └── mp_rank_03_model_states.pt
+└── latest_checkpointed_iteration.txt
+```
 
 ## 1 Installation
 
