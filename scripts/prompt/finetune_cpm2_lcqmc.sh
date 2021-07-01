@@ -9,7 +9,7 @@ HOST_FILE="${WORKING_DIR}/configs/host_files/hostfile-cpm2"
 
 MP_SIZE=4
 
-DATA_EXT=".json"
+DATA_EXT=".jsonl"
 DATA_PATH="/root/thu-plm/data/lcqmc"
 
 LR=${1-0.005}

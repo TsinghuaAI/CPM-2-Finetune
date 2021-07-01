@@ -1,41 +1,27 @@
 #! /bin/bash
 
-WORKING_DIR=/mnt/sfs_turbo/back-folder/CPM-Finetune-gyx
+WORKING_DIR=/root/thu-plm/CPM-2-Finetune
 
-if [[ $DLS_TASK_NUMBER == 1 ]]; then
-    MASTER_ADDR=localhost
-    MASTER_PORT=6000
-    NNODES=1
-    NODE_RANK=0
-else
-    MASTER_HOST="$BATCH_CUSTOM0_HOSTS"
-    MASTER_ADDR="${MASTER_HOST%%:*}"
-    MASTER_PORT="${MASTER_HOST##*:}"
-    NNODES="$DLS_TASK_NUMBER"
-    NODE_RANK="$DLS_TASK_INDEX"
-fi
+NUM_WORKERS=2
+NUM_GPUS_PER_WORKER=8
 
-GPUS_PER_NODE=8
-DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
-                  --nnodes $NNODES --node_rank $NODE_RANK \
-                  --master_addr $MASTER_ADDR \
-                  --master_port $MASTER_PORT"
+HOST_FILE="${WORKING_DIR}/configs/host_files/hostfile-cpm2"
 
 MP_SIZE=4
 
 DATA_EXT=".json"
-DATA_PATH="/mnt/sfs_turbo/data/qingyuan/wmt20-encn"
+DATA_PATH="/root/thu-plm/data/wmt20-encn"
 
 LR=${1-0.02}
 GRAD_ACC=${2-2}
 
 CONFIG_PATH="${WORKING_DIR}/configs/model/cpm2_config.json"
-CKPT_PATH="/mnt/sfs_turbo/back-folder/enc-dec-pretrain-dense/results/enc_dec_mt5_2021-5-1/"
+CKPT_PATH="/root/thu-plm/checkpoints/cpm2-encn"
 
-SAVE_PATH="${WORKING_DIR}/results/wmtencn/t5_finetune_wmtcn_lr${LR}const_G${GRAD_ACC}_prompt/"
+SAVE_PATH="${WORKING_DIR}/results/cpm2_finetune_wmtcn_lr${LR}const_G${GRAD_ACC}_prompt/"
 LOG_FILE="${SAVE_PATH}/log.txt"
 DS_CONFIG="${WORKING_DIR}/configs/deepspeed/ds_wmt_prompt.json"
-TOKENIZER_PATH="${WORKING_DIR}/bpe_new_cn_en"
+TOKENIZER_PATH="${WORKING_DIR}/bpe_cn_en"
 
 PROMPT_CONFIG="${WORKING_DIR}/configs/prompt/wmt/wmt_10_0_0.json"
 
@@ -82,10 +68,8 @@ OPTS+=" --prompt_config ${PROMPT_CONFIG}"
 # OPTS+=" --do_infer"
 OPTS+=" --epochs ${EPOCHS}"
 
-CMD="python -m torch.distributed.launch ${DISTRIBUTED_ARGS} ${WORKING_DIR}/finetune_cpm2.py ${OPTS}"
+CMD="deepspeed --num_nodes ${NUM_WORKERS} --num_gpus ${NUM_GPUS_PER_WORKER} --hostfile ${HOST_FILE} ${WORKING_DIR}/finetune_cpm2.py ${OPTS}"
 
 echo ${CMD}
 mkdir -p ${SAVE_PATH}
 ${CMD} 2>&1 | tee ${SAVE_PATH}/train_log
-
-set +x

@@ -16,7 +16,7 @@ LR=${1-0.000005}
 GRAD_ACC=${2-2}
 
 CONFIG_PATH="${WORKING_DIR}/configs/model/cpm2_config.json"
-CKPT_PATH="/root/thu-plm/checkpoints/cpm2"
+CKPT_PATH="/root/thu-plm/checkpoints/cpm2-encn"
 
 SAVE_PATH="${WORKING_DIR}/results/cpm2_finetune_wmtcn_lr${LR}const_G${GRAD_ACC}/"
 LOG_FILE="${SAVE_PATH}/log.txt"

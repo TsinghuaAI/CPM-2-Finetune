@@ -142,7 +142,7 @@ class C3Dataset(CPM2Dataset):
             jobj = json.load(f)
 
         for d in jobj[:int(self.ratio * len(jobj))]:
-            context_ids = self.tokenizer.encode(d[0])
+            context_ids = self.tokenizer.encode(d[0][0])
             for qa in d[1]:
                 question_ids = self.tokenizer.encode(qa["question"])
                 choice_ids = []
