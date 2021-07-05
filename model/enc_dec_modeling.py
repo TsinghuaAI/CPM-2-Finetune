@@ -142,6 +142,10 @@ def enc_dec_get_params_for_prompt_optimization(module: nn.Module):
         if "prompt_embeds" in t[0]:
             params.append({'params': [p for p in list(t[1]._parameters.values()) if p is not None]})
 
+    for t in module.named_parameters():
+        if "prompt" not in t[0]:
+            t[1].requires_grad_(False)
+
     if torch.distributed.get_rank() == 0:
         print("print params", params)
     return params
