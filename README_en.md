@@ -37,9 +37,9 @@ For installation, you can directly pull our docker environment:
 docker pull gyxthu17/cpm-2:1.0
 ```
 
-Run the following code to run the docker image:
+Since the enviroment is ready in the docker, you don't need to set any environmental variables. You may need to mount this directory to a directory in the docker. For example, to mount to `/mnt`, run the following code to run the docker image:
 ```[bash]
-docker run -ti gyxthu17/cpm-2:1.0 /bin/bash
+docker run -ti -v ${PWD}:/mnt gyxthu17/cpm-2:1.0 /bin/bash
 ```
 
 ## 2 Full Model Fine-tuning
