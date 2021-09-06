@@ -30,6 +30,9 @@ cpm2/
 ```
 
 ## 1 安装
+我们提供了两种安装的方式，其中，我们推荐直接使用 docker 以避免软件包版本的问题。
+
+### 方式一：直接使用 Docker (推荐)
 可以直接拉取我们提供的 Docker 环境：
 
 ```[bash]
@@ -41,6 +44,10 @@ docker pull gyxthu17/cpm-2:1.1
 docker run -ti -v ${PWD}:/mnt gyxthu17/cpm-2:1.1 /bin/bash
 ```
 Docker 启动之后在 /mnt 下操作即可。
+
+### 方式二：配置 deepspeed
+
+我们使用了`0.3.9`版本的 deepspeed，可根据其[仓库](https://github.com/microsoft/DeepSpeed/releases/tag/v0.3.9)提供的文档进行安装。由于 deepspeed 本身存在一些 bug，因此需要对其中的文件进行一些修改，原因可以参考 https://github.com/TsinghuaAI/CPM-2-Finetune/issues/11。具体地，需要修改 `deepspeed/runtime/zero/stage1.py` 中的两行代码。我们在仓库中提供了修改后的 `stage1.py`，被修改的行标记了 `CPM: HACK`。 用仓库中的 `stage1.py` 替换 `deepspeed/runtime/zero/stage1.py` 即可完成修改。
 
 ## 2 全参数微调
 
