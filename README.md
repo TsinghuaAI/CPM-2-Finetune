@@ -49,6 +49,8 @@ Docker 启动之后在 /mnt 下操作即可。
 
 我们使用了`0.3.9`版本的 deepspeed，可根据其[仓库](https://github.com/microsoft/DeepSpeed/releases/tag/v0.3.9)提供的文档进行安装。由于 deepspeed 本身存在一些 bug，因此需要对其中的文件进行一些修改，原因可以参考 https://github.com/TsinghuaAI/CPM-2-Finetune/issues/11 。具体地，需要修改 `deepspeed/runtime/zero/stage1.py` 中的两行代码。我们在仓库中提供了修改后的 `stage1.py`，被修改的行标记了 `CPM: HACK`。 用仓库中的 `stage1.py` 替换 `deepspeed/runtime/zero/stage1.py` 即可完成修改。
 
+**注意我们目前只修复了 deepspeed stage 1 的问题，其他优化方法可以按照同样方法进行修改**
+
 ## 2 全参数微调
 
 `scripts/full_model/` 目录下的 7 个 .sh 文件分别对应技术报告中 7 个数据集的 Fine-tune 脚本。注意：除了 wmt_cn 之外，其他数据集都使用**纯中文模型**，wmt_cn 数据集使用**中英双语模型**。
