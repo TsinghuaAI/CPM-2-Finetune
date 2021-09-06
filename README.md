@@ -47,7 +47,7 @@ Docker 启动之后在 /mnt 下操作即可。
 
 ### 方式二：配置 deepspeed
 
-我们使用了`0.3.9`版本的 deepspeed，可根据其[仓库](https://github.com/microsoft/DeepSpeed/releases/tag/v0.3.9)提供的文档进行安装。由于 deepspeed 本身存在一些 bug，因此需要对其中的文件进行一些修改，原因可以参考 https://github.com/TsinghuaAI/CPM-2-Finetune/issues/11。具体地，需要修改 `deepspeed/runtime/zero/stage1.py` 中的两行代码。我们在仓库中提供了修改后的 `stage1.py`，被修改的行标记了 `CPM: HACK`。 用仓库中的 `stage1.py` 替换 `deepspeed/runtime/zero/stage1.py` 即可完成修改。
+我们使用了`0.3.9`版本的 deepspeed，可根据其[仓库](https://github.com/microsoft/DeepSpeed/releases/tag/v0.3.9)提供的文档进行安装。由于 deepspeed 本身存在一些 bug，因此需要对其中的文件进行一些修改，原因可以参考 https://github.com/TsinghuaAI/CPM-2-Finetune/issues/11 。具体地，需要修改 `deepspeed/runtime/zero/stage1.py` 中的两行代码。我们在仓库中提供了修改后的 `stage1.py`，被修改的行标记了 `CPM: HACK`。 用仓库中的 `stage1.py` 替换 `deepspeed/runtime/zero/stage1.py` 即可完成修改。
 
 ## 2 全参数微调
 
