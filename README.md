@@ -36,18 +36,18 @@ cpm2/
 可以直接拉取我们提供的 Docker 环境：
 
 ```[bash]
-docker pull gyxthu17/cpm-2:1.1
+docker pull gyxthu17/cpm-2:1.2
 ```
 
 由于运行环境都已在 Docker 中配置好，因此不需要设置额外的环境变量。运行前需要将本目录挂载到 Docker 中，例如将本目录挂载到 Docker 中的 /mnt，可以使用以下命令运行 Docker 环境：
 ```[bash]
-docker run -ti -v ${PWD}:/mnt gyxthu17/cpm-2:1.1 /bin/bash
+docker run -ti -v ${PWD}:/mnt gyxthu17/cpm-2:1.2 /bin/bash
 ```
 Docker 启动之后在 /mnt 下操作即可。
 
 ### 方式二：配置 deepspeed
 
-我们使用了`0.3.9`版本的 deepspeed，可根据其[仓库](https://github.com/microsoft/DeepSpeed/releases/tag/v0.3.9)提供的文档进行安装。由于 deepspeed 本身存在一些 bug，因此需要对其中的文件进行一些修改，原因可以参考 https://github.com/TsinghuaAI/CPM-2-Finetune/issues/11 。具体地，需要修改 `deepspeed/runtime/zero/stage1.py` 中的两行代码。我们在仓库中提供了修改后的 `stage1.py`，被修改的行标记了 `CPM: HACK`。 用仓库中的 `stage1.py` 替换 `deepspeed/runtime/zero/stage1.py` 即可完成修改。
+我们使用了`0.3.9`版本的 deepspeed，可根据其[仓库](https://github.com/microsoft/DeepSpeed/releases/tag/v0.3.9)提供的文档进行安装。由于 deepspeed 本身存在一些 bug，因此需要对其中的文件进行一些修改，原因可以参考 https://github.com/TsinghuaAI/CPM-2-Finetune/issues/11 。具体地，需要修改 `deepspeed/runtime/zero/stage1.py` 中的一些代码，以及 `deepspeed/runtime/engine.py` 中的一些代码。我们在仓库中提供了修改后的 `stage1.py` 和 `engine.py`，被修改的行标记了 `CPM: HACK`。 用仓库中的 `stage1.py` 和 `engine.py` 分别替换 `deepspeed/runtime/zero/stage1.py` 和 `deepspeed/runtime/engine.py` 即可完成修改。
 
 **注意我们目前只修复了 deepspeed stage 1 的问题，其他优化方法可以按照同样方法进行修改**
 
