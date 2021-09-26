@@ -6,6 +6,7 @@
 
 CPM-2技术报告请参考[link](https://arxiv.org/abs/2106.10715)。
 
+**若您想使用CPM-2进行推理，我们建议使用高效推理工具[BMInf](https://github.com/OpenBMB/BMInf)，支持1060以上显卡单卡推理。**
 
 ## 0 模型下载
 
