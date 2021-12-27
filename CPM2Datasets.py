@@ -574,3 +574,46 @@ class CCPMDataset(CPM2Dataset):
         max_dec_len = max(dec_sizes)
 
         return data, max_enc_len, max_dec_len
+
+class KDConvDataset(CPM2Dataset):
+    def __init__(self, args, tokenizer: EncDecTokenizer, path, split, ratio=1, prefix=None, add_target_post=True, cache_path=None, do_infer=False, prompt_config=None):
+        super(KDConvDataset, self).__init__(args, tokenizer, path, split, ratio, prefix, add_target_post, cache_path, do_infer, prompt_config)
+
+    def process_data(self):
+        jobj = []
+        with open(self.path, "r") as f:
+            for line in f:
+                jobj.append(json.loads(line.strip()))
+
+        data = []
+        enc_sizes, dec_sizes = [], []
+
+        idx = 0
+
+        for obj in jobj[:int(self.ratio * len(jobj))]:
+            source = "历史：{} 图谱：{}".format(obj['history'], obj['kg'])
+            # source = obj['history'].replace('<eod>', '\n')
+            target = obj['response']
+            enc_input_ids = self.tokenizer.encode(source)[:512]
+            target = [1, self.tokenizer.get_sentinel_id(0)] + ( self.tokenizer.encode(target)  if not self.do_infer else [ self.tokenizer.pad_id ] )
+
+            if self.add_target_post:
+                target += [self.tokenizer.get_sentinel_id(1)]
+
+            enc_sizes.append(len(enc_input_ids))
+            dec_sizes.append(len(target) - 1)
+
+            data.append({
+                "idx": idx,
+                "enc_input_ids": enc_input_ids,
+                "dec_input_ids": target[:-1],
+                "label_ids": target[1:]
+            })
+
+            idx += 1
+
+        max_enc_len = max(enc_sizes)
+        max_dec_len = max(dec_sizes)
+
+        return data, max_enc_len, max_dec_len
+    
