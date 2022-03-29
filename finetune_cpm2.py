@@ -42,6 +42,81 @@ import torch.nn.functional as F
 from generation_metrics import Metric
 
 
+class _RankCrossEntropy(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, score, loss_mask):
+        losses = F.cross_entropy(score, torch.zeros(score.size()[0], dtype=torch.long).to(score.device)) * loss_mask
+ 
+        torch.distributed.all_reduce(losses, op=torch.distributed.ReduceOp.SUM, group=mpu.get_model_parallel_group())
+        softmax = F.softmax(score, dim = 1)
+        ctx.save_for_backward(softmax, loss_mask)
+
+        return losses
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        softmax, loss_mask = ctx.saved_tensors
+        grad_input = softmax
+        grad_input[:, 0] -= 1.0
+        grad_input.mul_(loss_mask)
+        grad_input.mul_(grad_output)
+
+        return grad_input, None
+
+
+
+def forward_rank_step(args, model_batch, no_model_batch, model, device, keep_enc_hidden=False, do_infer=False, quoter_valid = False, sogou_log = False):
+    for k in model_batch:
+        model_batch[k] = model_batch[k].to(device)
+    for k in no_model_batch:
+        # if type(no_model_batch[k]) == list:
+        #     continue
+        no_model_batch[k] = no_model_batch[k].to(device)
+
+    if keep_enc_hidden:
+        enc_outputs = model(**model_batch, only_encoder=True)
+        enc_hidden_states = enc_outputs["encoder_last_hidden_state"]
+        output = model(**model_batch, enc_hidden_states=enc_hidden_states)
+    else:
+        output = model(**model_batch)
+    
+    logits = output["lm_logits"]
+    forw_out = {
+        "logits": logits
+    }
+    if keep_enc_hidden:
+        forw_out["enc_hidden_states"] = enc_hidden_states
+
+    assert logits.size()[1] == 2
+
+    rank = mpu.get_model_parallel_rank()
+    relevant_logit = logits[:,-1,400]
+    if do_infer:
+        forw_out["rlogits"] = relevant_logit
+        return forw_out
+
+    if rank != 0:
+        loss_mask = torch.tensor(0, dtype=torch.long).to(logits.device)
+    else:
+        loss_mask = torch.tensor(1, dtype=torch.long).to(logits.device)
+
+    if sogou_log:
+        forw_out["score"] = relevant_logit
+        return forw_out
+    score = relevant_logit.view(-1, 2) / args.temp
+
+    losses = _RankCrossEntropy.apply(score, loss_mask)
+
+    loss = losses.mean()
+
+    forw_out["loss"] = loss
+    forw_out["score"] = score
+    
+    return forw_out
+
+
+
+
 def forward_step(args, model_batch, no_model_batch, model, device, keep_enc_hidden=False, do_infer=False):
     for k in model_batch:
         model_batch[k] = model_batch[k].to(device)
@@ -120,8 +195,10 @@ def train(args, data_config, tokenizer, model, optimizer, lr_scheduler,
     for e in range(args.epochs):
         model.train()
         for model_batch, no_model_batch in train_dataloader:
-
-            forw_out = forward_step(args, model_batch, no_model_batch, model, device)
+        if args.data_name in ["sogou-log"]:
+                forw_out = forward_rank_step(args, model_batch, no_model_batch, model, device)
+            else:
+                forw_out = forward_step(args, model_batch, no_model_batch, model, device)
             loss = forw_out["loss"]
             
             if torch.distributed.get_rank() == 0:
@@ -187,6 +264,43 @@ def train(args, data_config, tokenizer, model, optimizer, lr_scheduler,
 
     return global_step
 
+
+def evaluate_rank(args, tokenizer: EncDecTokenizer, data_config, eval_dataset, eval_data_loader, model, device, mode='dev'):
+    """Evaluation."""
+
+    # Turn on evaluation mode which disables dropout.
+    model.eval()
+
+    total_loss = 0.0
+    step = 0
+
+    all_idx = []
+    all_preds = []
+    all_labels = []
+    all_L = []
+
+    total = torch.tensor(0, dtype=torch.long).to(device)
+    right = torch.tensor(0, dtype=torch.long).to(device)
+    with torch.no_grad():
+        for model_batch, no_model_batch in eval_data_loader:
+            forw_out = forward_rank_step(args, model_batch, no_model_batch, model, device, do_infer=(mode=="infer"))
+            loss = forw_out["loss"].item() if "loss" in forw_out else 0
+            total_loss += loss
+
+            score = forw_out["score"] # batch, 2
+            total += score.size()[0]
+            right += (torch.max(score, dim = 1)[1] == 0).int().sum()
+
+            step += 1
+    rank = mpu.get_model_parallel_rank()
+    if rank != 0:
+        total *= 0
+        right *= 0
+    torch.distributed.all_reduce(total, op=torch.distributed.ReduceOp.SUM, group=mpu.get_data_parallel_group())
+    torch.distributed.all_reduce(right, op=torch.distributed.ReduceOp.SUM, group=mpu.get_data_parallel_group())
+
+    total_loss /= step
+    return total_loss, float(right.float() / total.float())
 
 def evaluate(args, tokenizer: EncDecTokenizer, data_config, eval_dataset: CPM2Dataset, eval_data_loader, model, device, mode='dev'):
     """Evaluation."""
