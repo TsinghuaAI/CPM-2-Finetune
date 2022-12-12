@@ -619,7 +619,7 @@ class KDConvDataset(CPM2Dataset):
 
     
 
-class SogouLogDataset(T5Dataset):
+class SogouLogDataset(CPM2Dataset):
     def __init__(self, args, tokenizer: EncDecTokenizer, path, split, ratio=1, prefix=None, add_target_post=False, cache_path=None, do_infer=False, prompt_config=None):
         super(SogouLogDataset, self).__init__(args, tokenizer, path, split, ratio, prefix, add_target_post, cache_path, do_infer, prompt_config)
 
