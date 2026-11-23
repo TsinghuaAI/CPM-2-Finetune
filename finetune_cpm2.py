@@ -195,7 +195,7 @@ def train(args, data_config, tokenizer, model, optimizer, lr_scheduler,
     for e in range(args.epochs):
         model.train()
         for model_batch, no_model_batch in train_dataloader:
-        if args.data_name in ["sogou-log"]:
+            if args.data_name in ["sogou-log"]:
                 forw_out = forward_rank_step(args, model_batch, no_model_batch, model, device)
             else:
                 forw_out = forward_step(args, model_batch, no_model_batch, model, device)
